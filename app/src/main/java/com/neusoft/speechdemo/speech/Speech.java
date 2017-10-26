@@ -17,21 +17,29 @@ import static com.iflytek.cloud.SpeechEvent.EVENT_TTS_CANCEL;
 /**
  * 语音实现类
  */
-public class SpeechImpl implements ISpeech {
+public class Speech implements ISpeech {
 
-    private static final String TAG = SpeechImpl.class.getSimpleName();
+    private static final String TAG = Speech.class.getSimpleName();
 
     private SpeechBaseUtil mSpeechBaseUtil = null;
 
     private Context mContext = null;
 
-    public SpeechImpl(Context pContext) {
-        mContext = pContext;
-        mSpeechBaseUtil = new SpeechBaseUtil();
+    private Speech() {
+    }
+
+    private static class SingletonHolder {
+        private final static Speech INSTANCE = new Speech();
+    }
+
+    public static Speech getInstance() {
+        return SingletonHolder.INSTANCE;
     }
 
     @Override
-    public void init(final OnSpeechInitListener pOnSpeechInitListener) {
+    public void init(Context pContext, final OnSpeechInitListener pOnSpeechInitListener) {
+        mContext = pContext;
+        mSpeechBaseUtil = new SpeechBaseUtil();
         mSpeechBaseUtil.init(mContext, new SpeechBaseUtil.SpeechInitListener() {
             @Override
             public void onCompleted() {

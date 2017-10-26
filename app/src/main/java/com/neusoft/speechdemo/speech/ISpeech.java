@@ -1,5 +1,7 @@
 package com.neusoft.speechdemo.speech;
 
+import android.content.Context;
+
 import com.neusoft.speechdemo.speech.listener.OnListenListener;
 import com.neusoft.speechdemo.speech.listener.OnSpeakListener;
 import com.neusoft.speechdemo.speech.listener.OnSpeechInitListener;
@@ -13,9 +15,10 @@ public interface ISpeech {
     /**
      * 初始化语音功能
      *
+     * @param pContext              上下文
      * @param pOnSpeechInitListener 语音功能初始化回调
      */
-    void init(OnSpeechInitListener pOnSpeechInitListener);
+    void init(Context pContext, OnSpeechInitListener pOnSpeechInitListener);
 
     /**
      * 语音播报
