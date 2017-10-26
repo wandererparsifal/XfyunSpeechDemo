@@ -4,8 +4,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.google.gson.reflect.TypeToken;
+import com.neusoft.speechdemo.speech.bean.ListenResult;
 import com.neusoft.speechdemo.speech.listener.OnListenListener;
 import com.neusoft.speechdemo.speech.listener.OnSpeakListener;
+import com.neusoft.speechdemo.util.JsonUtil;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,13 +23,51 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        SpeechApplication.getInstance().getSpeech().speak("您好，请问有什么可以帮助你的？", new OnSpeakListener() {
+        SpeechApplication.getInstance().getSpeech().speak("您好，请问有什么可以帮助您的？", new OnSpeakListener() {
             @Override
             public void onSpeakSuccess() {
                 SpeechApplication.getInstance().getSpeech().listen(new OnListenListener() {
                     @Override
                     public void onListenSuccess(String pResult) {
                         Log.e(TAG, "pResult " + pResult);
+                        ListenResult listenResult = JsonUtil.fromJson(pResult, new TypeToken<ListenResult>() {
+                        }.getType());
+                        Log.e(TAG, "listenResult " + pResult);
+                        if (null != listenResult && null != listenResult.answer && null != listenResult.answer.text) {
+                            SpeechApplication.getInstance().getSpeech().speak(listenResult.answer.text, new OnSpeakListener() {
+                                @Override
+                                public void onSpeakSuccess() {
+
+                                }
+
+                                @Override
+                                public void onSpeakError(int pErrorCode) {
+
+                                }
+
+                                @Override
+                                public void onCancel() {
+
+                                }
+                            });
+                        } else {
+                            SpeechApplication.getInstance().getSpeech().speak("对不起，没有查询到结果", new OnSpeakListener() {
+                                @Override
+                                public void onSpeakSuccess() {
+
+                                }
+
+                                @Override
+                                public void onSpeakError(int pErrorCode) {
+
+                                }
+
+                                @Override
+                                public void onCancel() {
+
+                                }
+                            });
+                        }
                     }
 
                     @Override
