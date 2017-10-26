@@ -5,26 +5,22 @@ import android.util.Log;
 
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
-import com.iflytek.cloud.RecognizerListener;
-import com.iflytek.cloud.SpeechRecognizer;
 import com.iflytek.cloud.SpeechSynthesizer;
+import com.iflytek.cloud.SpeechUnderstander;
+import com.iflytek.cloud.SpeechUnderstanderListener;
 import com.iflytek.cloud.SynthesizerListener;
-
-import java.io.InputStream;
 
 public class SpeechBaseUtil {
 
     private static final String TAG = SpeechBaseUtil.class.getSimpleName();
 
-    private Context mContext = null;
-
     private SpeechSynthesizer mSpeaker = null;
 
-    private SpeechRecognizer mGrammarHearer = null;
+    private SpeechUnderstander mListener = null;
 
     private boolean isReaderInitialized = false;
 
-    private boolean isGrammarHearerInitialized = false;
+    private boolean isListenerInitialized = false;
 
     private boolean isAllInitialized = false;
 
@@ -37,7 +33,6 @@ public class SpeechBaseUtil {
      * @param pCallback
      */
     protected void init(Context pContext, SpeechInitListener pCallback) {
-        this.mContext = pContext;
         this.mSpeechInitListener = pCallback;
         this.mSpeaker = SpeechSynthesizer.createSynthesizer(pContext, new InitListener() {
             @Override
@@ -52,16 +47,16 @@ public class SpeechBaseUtil {
                 }
             }
         });
-        this.mGrammarHearer = SpeechRecognizer.createRecognizer(pContext, new InitListener() {
+        this.mListener = SpeechUnderstander.createUnderstander(pContext, new InitListener() {
             @Override
             public void onInit(int code) {
                 if (code == ErrorCode.SUCCESS) {
-                    isGrammarHearerInitialized = true;
+                    isListenerInitialized = true;
                     checkInit();
-                    Log.d(TAG, "GrammarHearer init success");
+                    Log.d(TAG, "Listener init success");
                 } else {
                     mSpeechInitListener.onError(code);
-                    Log.e(TAG, "GrammarHearer init error，code = " + code);
+                    Log.e(TAG, "Listener init error，code = " + code);
                 }
             }
         });
@@ -69,27 +64,11 @@ public class SpeechBaseUtil {
 
     private void checkInit() {
         Log.d(TAG, "checkInit");
-        if (isReaderInitialized && isGrammarHearerInitialized) {
+        if (isReaderInitialized && isListenerInitialized) {
             isAllInitialized = true;
             Log.d(TAG, "checkInit AllInitialized");
             mSpeechInitListener.onCompleted();
         }
-    }
-
-    private String readFile(Context mContext, String file, String code) {
-        int len;
-        byte[] buf;
-        String result = "";
-        try {
-            InputStream in = mContext.getAssets().open(file);
-            len = in.available();
-            buf = new byte[len];
-            in.read(buf, 0, len);
-            result = new String(buf, code);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
     }
 
     /**
@@ -119,30 +98,30 @@ public class SpeechBaseUtil {
         }
     }
 
-    protected void commonHear(final RecognizerListener pHearListener) {
+    protected void listen(final SpeechUnderstanderListener pListenListener) {
         if (isAllInitialized) {
-            setCommonHearParam();
-            int code = mGrammarHearer.startListening(pHearListener);
+            setListenParam();
+            int code = mListener.startUnderstanding(pListenListener);
             if (code != ErrorCode.SUCCESS) {
-                Log.d(TAG, "start commonHear error : " + code);
+                Log.d(TAG, "start listen error : " + code);
             } else {
-                Log.d(TAG, "start commonHear success");
+                Log.d(TAG, "start listen success");
             }
         } else {
             Log.e(TAG, "SpeechUtil is uninitialized.");
         }
     }
 
-    protected boolean isHearing() {
+    protected boolean isListening() {
         if (isAllInitialized) {
-            return mGrammarHearer.isListening();
+            return mListener.isUnderstanding();
         } else {
             Log.e(TAG, "SpeechUtil is uninitialized.");
             return false;
         }
     }
 
-    protected void cancelSpeaking() {
+    protected void cancelSpeak() {
         if (isAllInitialized) {
             if (mSpeaker.isSpeaking()) {
                 mSpeaker.stopSpeaking();
@@ -152,10 +131,10 @@ public class SpeechBaseUtil {
         }
     }
 
-    protected void cancelHearing() {
+    protected void cancelListen() {
         if (isAllInitialized) {
-            if (mGrammarHearer.isListening()) {
-                mGrammarHearer.cancel();
+            if (mListener.isUnderstanding()) {
+                mListener.cancel();
             }
             /**
              * cancel是停止识别，调用后，不会录音，也不会返回结果了，直接终止了识别
@@ -167,7 +146,7 @@ public class SpeechBaseUtil {
     }
 
     /**
-     * Free Speaker And Hearer
+     * Free Speaker And Listener
      */
     protected void release() {
         if (null != mSpeaker) {
@@ -176,11 +155,11 @@ public class SpeechBaseUtil {
             }
             mSpeaker.destroy();
         }
-        if (null != mGrammarHearer) {
-            if (mGrammarHearer.isListening()) {
-                mGrammarHearer.cancel();
+        if (null != mListener) {
+            if (mListener.isUnderstanding()) {
+                mListener.cancel();
             }
-            mGrammarHearer.destroy();
+            mListener.destroy();
         }
     }
 
@@ -197,17 +176,17 @@ public class SpeechBaseUtil {
         mSpeaker.setParameter(com.iflytek.cloud.SpeechConstant.TTS_AUDIO_PATH, SpeechConstant.TTS_AUDIO_PATH);
     }
 
-    public void setCommonHearParam() {
-        mGrammarHearer.setParameter(com.iflytek.cloud.SpeechConstant.PARAMS, null);
-        mGrammarHearer.setParameter(com.iflytek.cloud.SpeechConstant.ENGINE_TYPE, com.iflytek.cloud.SpeechConstant.TYPE_CLOUD);
-        mGrammarHearer.setParameter(com.iflytek.cloud.SpeechConstant.RESULT_TYPE, SpeechConstant.RESULT_TYPE);
-        mGrammarHearer.setParameter(com.iflytek.cloud.SpeechConstant.LANGUAGE, SpeechConstant.LANGUAGE);
-        mGrammarHearer.setParameter(com.iflytek.cloud.SpeechConstant.ACCENT, SpeechConstant.ACCENT);
-        mGrammarHearer.setParameter(com.iflytek.cloud.SpeechConstant.VAD_BOS, SpeechConstant.VAD_BOS);
-        mGrammarHearer.setParameter(com.iflytek.cloud.SpeechConstant.VAD_EOS, SpeechConstant.VAD_EOS);
-        mGrammarHearer.setParameter(com.iflytek.cloud.SpeechConstant.ASR_PTT, SpeechConstant.ASR_PTT);
-        mGrammarHearer.setParameter(com.iflytek.cloud.SpeechConstant.AUDIO_FORMAT, SpeechConstant.AUDIO_FORMAT);
-        mGrammarHearer.setParameter(com.iflytek.cloud.SpeechConstant.ASR_AUDIO_PATH, SpeechConstant.IAT_AUDIO_PATH);
+    public void setListenParam() {
+        mListener.setParameter(com.iflytek.cloud.SpeechConstant.PARAMS, null);
+        mListener.setParameter(com.iflytek.cloud.SpeechConstant.ENGINE_TYPE, com.iflytek.cloud.SpeechConstant.TYPE_CLOUD);
+        mListener.setParameter(com.iflytek.cloud.SpeechConstant.RESULT_TYPE, SpeechConstant.RESULT_TYPE);
+        mListener.setParameter(com.iflytek.cloud.SpeechConstant.LANGUAGE, SpeechConstant.LANGUAGE);
+        mListener.setParameter(com.iflytek.cloud.SpeechConstant.ACCENT, SpeechConstant.ACCENT);
+        mListener.setParameter(com.iflytek.cloud.SpeechConstant.VAD_BOS, SpeechConstant.VAD_BOS);
+        mListener.setParameter(com.iflytek.cloud.SpeechConstant.VAD_EOS, SpeechConstant.VAD_EOS);
+        mListener.setParameter(com.iflytek.cloud.SpeechConstant.ASR_PTT, SpeechConstant.ASR_PTT);
+        mListener.setParameter(com.iflytek.cloud.SpeechConstant.AUDIO_FORMAT, SpeechConstant.AUDIO_FORMAT);
+        mListener.setParameter(com.iflytek.cloud.SpeechConstant.ASR_AUDIO_PATH, SpeechConstant.IAT_AUDIO_PATH);
     }
 
     public interface SpeechInitListener {

@@ -4,10 +4,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.iflytek.cloud.RecognizerListener;
-import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechError;
+import com.iflytek.cloud.SpeechUnderstanderListener;
 import com.iflytek.cloud.SynthesizerListener;
+import com.iflytek.cloud.UnderstanderResult;
 import com.neusoft.speechdemo.speech.listener.OnListenListener;
 import com.neusoft.speechdemo.speech.listener.OnSpeakListener;
 import com.neusoft.speechdemo.speech.listener.OnSpeechInitListener;
@@ -16,7 +16,6 @@ import static com.iflytek.cloud.SpeechEvent.EVENT_TTS_CANCEL;
 
 /**
  * 语音实现类
- * Created by yangming on 17-4-24.
  */
 public class SpeechImpl implements ISpeech {
 
@@ -102,12 +101,12 @@ public class SpeechImpl implements ISpeech {
 
     @Override
     public void cancelSpeak() {
-        mSpeechBaseUtil.cancelSpeaking();
+        mSpeechBaseUtil.cancelSpeak();
     }
 
     @Override
     public void listen(final OnListenListener pOnListenListener) {
-        mSpeechBaseUtil.commonHear(new RecognizerListener() {
+        mSpeechBaseUtil.listen(new SpeechUnderstanderListener() {
             @Override
             public void onVolumeChanged(int i, byte[] bytes) {
 
@@ -124,8 +123,8 @@ public class SpeechImpl implements ISpeech {
             }
 
             @Override
-            public void onResult(RecognizerResult recognizerResult, boolean b) {
-                pOnListenListener.onListenSuccess(recognizerResult.getResultString());
+            public void onResult(UnderstanderResult understanderResult) {
+                pOnListenListener.onListenSuccess(understanderResult.getResultString());
             }
 
             @Override
@@ -142,12 +141,12 @@ public class SpeechImpl implements ISpeech {
 
     @Override
     public boolean isListening() {
-        return mSpeechBaseUtil.isHearing();
+        return mSpeechBaseUtil.isListening();
     }
 
     @Override
     public void cancelListen() {
-        mSpeechBaseUtil.cancelHearing();
+        mSpeechBaseUtil.cancelListen();
     }
 
     @Override
