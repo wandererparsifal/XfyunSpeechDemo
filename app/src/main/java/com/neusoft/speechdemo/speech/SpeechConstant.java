@@ -6,35 +6,6 @@ import android.os.Environment;
  * 语音常量
  */
 public class SpeechConstant {
-
-    /**
-     * 命令类
-     */
-    public static final String CMD = "cmd";
-
-    /**
-     * 地图类
-     */
-    public static final String MAP = "map";
-
-    /**
-     * 音乐类
-     */
-    public static final String MUSIC = "music";
-
-    // ---------以下为模拟代码---------
-    /**
-     * Speech recognize.
-     */
-    public static final int IAT = 0;
-    /**
-     * Grammar recognize.
-     */
-    public static final int ASR = 1;
-    /**
-     * Speech understand.
-     */
-    public static final int UNDERSTAND = 2;
     /**
      * Speaker.
      */
@@ -131,5 +102,4 @@ public class SpeechConstant {
      * IVW net mode.
      */
     public static final String IVW_NET_MODE = "0";
-    // ---------以上为模拟代码---------
 }
