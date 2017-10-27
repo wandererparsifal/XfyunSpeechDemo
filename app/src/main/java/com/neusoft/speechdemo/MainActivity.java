@@ -11,6 +11,11 @@ import com.neusoft.speechdemo.speech.listener.OnListenListener;
 import com.neusoft.speechdemo.speech.listener.OnSpeakListener;
 import com.neusoft.speechdemo.util.JsonUtil;
 
+import static com.neusoft.speechdemo.RequestCode.LISTEN_OPEN_TYPE;
+import static com.neusoft.speechdemo.RequestCode.SPEAK_GREETING;
+import static com.neusoft.speechdemo.RequestCode.SPEAK_SORRY;
+import static com.neusoft.speechdemo.RequestCode.SPEAK_WEATHER_RESULT;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -20,12 +25,12 @@ public class MainActivity extends AppCompatActivity {
         public void onSpeakSuccess(int requestCode) {
             Log.d(TAG, "onSpeakSuccess requestCode " + requestCode);
             switch (requestCode) {
-                case 101:
-                    Speech.getInstance().listen(201);
+                case SPEAK_GREETING:
+                    Speech.getInstance().listen(LISTEN_OPEN_TYPE);
                     break;
-                case 102:
+                case SPEAK_WEATHER_RESULT:
                     break;
-                case 103:
+                case SPEAK_SORRY:
                     break;
                 default:
                     break;
@@ -48,15 +53,15 @@ public class MainActivity extends AppCompatActivity {
         public void onListenSuccess(int requestCode, String pResult) {
             Log.d(TAG, "onListenSuccess requestCode " + requestCode);
             switch (requestCode) {
-                case 201:
+                case LISTEN_OPEN_TYPE:
                     Log.e(TAG, "pResult " + pResult);
                     ListenResult listenResult = JsonUtil.fromJson(pResult, new TypeToken<ListenResult>() {
                     }.getType());
                     Log.e(TAG, "listenResult " + pResult);
                     if (null != listenResult && null != listenResult.answer && null != listenResult.answer.text) {
-                        Speech.getInstance().speak(listenResult.answer.text, 102);
+                        Speech.getInstance().speak(listenResult.answer.text, SPEAK_WEATHER_RESULT);
                     } else {
-                        Speech.getInstance().speak("对不起，没有查询到结果", 103);
+                        Speech.getInstance().speak("对不起，没有查询到结果。", SPEAK_SORRY);
                     }
                     break;
                 default:
@@ -81,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Speech.getInstance().speak("您好，请问有什么可以帮助您的？", 101);
+        Speech.getInstance().speak("您好，请问有什么可以帮助您的？", SPEAK_GREETING);
     }
 
     @Override
