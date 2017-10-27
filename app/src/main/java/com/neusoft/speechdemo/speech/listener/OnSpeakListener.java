@@ -16,7 +16,7 @@ public abstract class OnSpeakListener implements SynthesizerListener {
 
     public abstract void onSpeakSuccess(int requestCode);
 
-    public abstract void onSpeakError(int requestCode, int pErrorCode);
+    public abstract void onSpeakError(int requestCode, int errorCode);
 
     public abstract void onCancel(int requestCode);
 

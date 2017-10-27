@@ -13,10 +13,10 @@ public interface ISpeech {
     /**
      * 初始化语音功能
      *
-     * @param pContext              上下文
-     * @param pOnSpeechInitListener 语音功能初始化回调
+     * @param context              上下文
+     * @param onSpeechInitListener 语音功能初始化回调
      */
-    void init(Context pContext, OnSpeechInitListener pOnSpeechInitListener);
+    void init(Context context, OnSpeechInitListener onSpeechInitListener);
 
     /**
      * 语音播报

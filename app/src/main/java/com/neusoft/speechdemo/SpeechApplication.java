@@ -26,7 +26,7 @@ public class SpeechApplication extends Application {
             }
 
             @Override
-            public void onInitError(int pErrorCode) {
+            public void onInitError(int errorCode) {
 
             }
         });

@@ -11,15 +11,15 @@ import java.lang.reflect.Type;
  */
 public class JsonUtil {
 
-    public static String toJson(Object pObject) {
-        return new Gson().toJson(pObject);
+    public static String toJson(Object object) {
+        return new Gson().toJson(object);
     }
 
-    public static <T> T fromJson(String pJson, Class<T> pClass) {
-        return new Gson().fromJson(pJson, pClass);
+    public static <T> T fromJson(String json, Class<T> clz) {
+        return new Gson().fromJson(json, clz);
     }
 
-    public static <T> T fromJson(String pJson, Type pType) {
-        return new Gson().fromJson(pJson, pType);
+    public static <T> T fromJson(String json, Type type) {
+        return new Gson().fromJson(json, type);
     }
 }

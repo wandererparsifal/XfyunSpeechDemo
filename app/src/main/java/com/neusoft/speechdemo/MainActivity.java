@@ -71,8 +71,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
 
         @Override
-        public void onSpeakError(int requestCode, int pErrorCode) {
-            Log.d(TAG, "onSpeakError requestCode " + requestCode + ", pErrorCode " + pErrorCode);
+        public void onSpeakError(int requestCode, int errorCode) {
+            Log.d(TAG, "onSpeakError requestCode " + requestCode + ", errorCode " + errorCode);
         }
 
         @Override
@@ -86,13 +86,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
      */
     private OnListenListener mOnListenListener = new OnListenListener() {
         @Override
-        public void onListenSuccess(int requestCode, String pResult) {
-            Log.d(TAG, "onListenSuccess requestCode " + requestCode + ", pResult " + pResult);
+        public void onListenSuccess(int requestCode, String result) {
+            Log.d(TAG, "onListenSuccess requestCode " + requestCode + ", result " + result);
             switch (requestCode) {
                 case LISTEN_OPEN_TYPE:
                     // 这里可以有多分支判断，目前只做了天气的判断
                     boolean hasAnswer = false;
-                    ListenResult<Weather[]> weatherResult = JsonUtil.fromJson(pResult, new TypeToken<ListenResult<Weather[]>>() {
+                    ListenResult<Weather[]> weatherResult = JsonUtil.fromJson(result, new TypeToken<ListenResult<Weather[]>>() {
                     }.getType());
                     if (null != weatherResult && "weather".equals(weatherResult.service)) {
                         if (null != weatherResult.answer && null != weatherResult.answer.text) {
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     break;
                 case LISTEN_PNCOMMAND_NAVI:
                     boolean isPositive = false;
-                    ListenResult commandResult = JsonUtil.fromJson(pResult, new TypeToken<ListenResult>() {
+                    ListenResult commandResult = JsonUtil.fromJson(result, new TypeToken<ListenResult>() {
                     }.getType());
                     if (null != commandResult && "PNCOMMAND.command".equals(commandResult.service)) {
                         Semantic[] semantics2 = commandResult.semantic;
@@ -136,8 +136,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
 
         @Override
-        public void onListenError(int requestCode, int pErrorCode) {
-            Log.d(TAG, "onListenError requestCode " + requestCode + ", pErrorCode " + pErrorCode);
+        public void onListenError(int requestCode, int errorCode) {
+            Log.d(TAG, "onListenError requestCode " + requestCode + ", errorCode " + errorCode);
         }
     };
 

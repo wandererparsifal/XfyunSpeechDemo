@@ -13,9 +13,9 @@ public abstract class OnListenListener implements SpeechUnderstanderListener {
 
     public int requestCode;
 
-    public abstract void onListenSuccess(int requestCode, String pResult);
+    public abstract void onListenSuccess(int requestCode, String result);
 
-    public abstract void onListenError(int requestCode, int pErrorCode);
+    public abstract void onListenError(int requestCode, int errorCode);
 
     @Override
     public void onVolumeChanged(int i, byte[] bytes) {

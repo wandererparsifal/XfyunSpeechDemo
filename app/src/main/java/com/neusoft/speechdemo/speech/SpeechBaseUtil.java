@@ -29,12 +29,12 @@ public class SpeechBaseUtil {
     /**
      * Init SpeechUtil
      *
-     * @param pContext
-     * @param pCallback
+     * @param context
+     * @param callback
      */
-    protected void init(Context pContext, SpeechInitListener pCallback) {
-        this.mSpeechInitListener = pCallback;
-        this.mSpeaker = SpeechSynthesizer.createSynthesizer(pContext, new InitListener() {
+    protected void init(Context context, SpeechInitListener callback) {
+        this.mSpeechInitListener = callback;
+        this.mSpeaker = SpeechSynthesizer.createSynthesizer(context, new InitListener() {
             @Override
             public void onInit(int code) {
                 if (code == ErrorCode.SUCCESS) {
@@ -47,7 +47,7 @@ public class SpeechBaseUtil {
                 }
             }
         });
-        this.mListener = SpeechUnderstander.createUnderstander(pContext, new InitListener() {
+        this.mListener = SpeechUnderstander.createUnderstander(context, new InitListener() {
             @Override
             public void onInit(int code) {
                 if (code == ErrorCode.SUCCESS) {
@@ -74,16 +74,16 @@ public class SpeechBaseUtil {
     /**
      * Text To Speech
      *
-     * @param pText
-     * @param pSpeakListener
+     * @param text
+     * @param speakListener
      */
-    protected void speak(String pText, SynthesizerListener pSpeakListener) {
+    protected void speak(String text, SynthesizerListener speakListener) {
         if (isAllInitialized) {
             if (mSpeaker.isSpeaking()) {
                 mSpeaker.stopSpeaking();
             }
             setSpeakParam();
-            mSpeaker.startSpeaking(pText, pSpeakListener);
+            mSpeaker.startSpeaking(text, speakListener);
         } else {
             Log.e(TAG, "SpeechUtil is uninitialized.");
         }
@@ -98,10 +98,10 @@ public class SpeechBaseUtil {
         }
     }
 
-    protected void listen(final SpeechUnderstanderListener pListenListener) {
+    protected void listen(final SpeechUnderstanderListener listenListener) {
         if (isAllInitialized) {
             setListenParam();
-            int code = mListener.startUnderstanding(pListenListener);
+            int code = mListener.startUnderstanding(listenListener);
             if (code != ErrorCode.SUCCESS) {
                 Log.d(TAG, "start listen error : " + code);
             } else {

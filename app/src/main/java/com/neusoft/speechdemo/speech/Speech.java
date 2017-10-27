@@ -38,19 +38,19 @@ public class Speech implements ISpeech {
     }
 
     @Override
-    public void init(Context pContext, final OnSpeechInitListener pOnSpeechInitListener) {
+    public void init(Context context, final OnSpeechInitListener onSpeechInitListener) {
         mSpeechBaseUtil = new SpeechBaseUtil();
-        mSpeechBaseUtil.init(pContext, new SpeechBaseUtil.SpeechInitListener() {
+        mSpeechBaseUtil.init(context, new SpeechBaseUtil.SpeechInitListener() {
             @Override
             public void onCompleted() {
                 Log.d(TAG, "SpeechBaseUtil init Completed");
-                pOnSpeechInitListener.onInitSuccess();
+                onSpeechInitListener.onInitSuccess();
             }
 
             @Override
             public void onError(int code) {
                 Log.d(TAG, "SpeechBaseUtil init Error, ErrorCode = " + code);
-                pOnSpeechInitListener.onInitError(code);
+                onSpeechInitListener.onInitError(code);
             }
         });
     }
@@ -81,7 +81,7 @@ public class Speech implements ISpeech {
                 }
 
                 @Override
-                public void onSpeakError(int requestCode, int pErrorCode) {
+                public void onSpeakError(int requestCode, int errorCode) {
 
                 }
 
@@ -110,12 +110,12 @@ public class Speech implements ISpeech {
         if (null == mOnListenListener) { // 防止空指针
             mOnListenListener = new OnListenListener() {
                 @Override
-                public void onListenSuccess(int requestCode, String pResult) {
+                public void onListenSuccess(int requestCode, String result) {
 
                 }
 
                 @Override
-                public void onListenError(int requestCode, int pErrorCode) {
+                public void onListenError(int requestCode, int errorCode) {
 
                 }
             };

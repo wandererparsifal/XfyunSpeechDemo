@@ -7,5 +7,5 @@ public interface OnSpeechInitListener {
 
     void onInitSuccess();
 
-    void onInitError(int pErrorCode);
+    void onInitError(int errorCode);
 }
