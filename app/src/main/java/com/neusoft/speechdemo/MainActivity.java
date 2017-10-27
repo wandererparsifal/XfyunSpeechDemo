@@ -36,7 +36,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     private boolean hasAllPermissions = false;
 
-    //所要申请的权限
+    /**
+     * 所要申请的权限
+     */
     private String[] mPermissions = {Manifest.permission.RECORD_AUDIO,
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -44,6 +46,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
+    /**
+     * 语音播报的回调
+     */
     private OnSpeakListener mOnSpeakListener = new OnSpeakListener() {
         @Override
         public void onSpeakSuccess(int requestCode) {
@@ -76,16 +81,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
     };
 
+    /**
+     * 语音监听的回调
+     */
     private OnListenListener mOnListenListener = new OnListenListener() {
         @Override
         public void onListenSuccess(int requestCode, String pResult) {
             Log.d(TAG, "onListenSuccess requestCode " + requestCode + ", pResult " + pResult);
             switch (requestCode) {
                 case LISTEN_OPEN_TYPE:
+                    // 这里可以有多分支判断，目前只做了天气的判断
                     boolean hasAnswer = false;
                     ListenResult<Weather[]> weatherResult = JsonUtil.fromJson(pResult, new TypeToken<ListenResult<Weather[]>>() {
                     }.getType());
-                    // 这里可以有多分支判断，目前只做了天气的判断
                     if (null != weatherResult && "weather".equals(weatherResult.service)) {
                         if (null != weatherResult.answer && null != weatherResult.answer.text) {
                             hasAnswer = true;
@@ -138,16 +146,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (EasyPermissions.hasPermissions(this, mPermissions)) {//检查是否获取该权限
+        if (EasyPermissions.hasPermissions(this, mPermissions)) { // 检查是否获取该权限
             Log.d(TAG, "已获取权限");
             hasAllPermissions = true;
         } else {
-            //第二个参数是被拒绝后再次申请该权限的解释
-            //第三个参数是请求码
-            //第四个参数是要申请的权限
+            // 第二个参数是被拒绝后再次申请该权限的解释
+            // 第三个参数是请求码
+            // 第四个参数是要申请的权限
             EasyPermissions.requestPermissions(this, "必要的权限未被授权，请授权", 0, mPermissions);
         }
 
+        // 注册播报与监听接口，注册之后 mOnSpeakListener 和 mOnListenListener 才会生效。需要与反注册成对出现
         Speech.getInstance().subscribeOnSpeakListener(mOnSpeakListener);
         Speech.getInstance().subscribeOnListenListener(mOnListenListener);
 
@@ -167,6 +176,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @Override
     protected void onStop() {
         super.onStop();
+        // 离开画面时停止播报与监听
         Speech.getInstance().cancelSpeak();
         Speech.getInstance().cancelListen();
     }
@@ -182,12 +192,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        //把申请权限的回调交由EasyPermissions处理
+        // 把申请权限的回调交由EasyPermissions处理
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
-    //下面两个方法是实现EasyPermissions的EasyPermissions.PermissionCallbacks接口
-    //分别返回授权成功和失败的权限
+    // 下面两个方法是实现EasyPermissions的EasyPermissions.PermissionCallbacks接口
+    // 分别返回授权成功和失败的权限
     @Override
     public void onPermissionsGranted(int requestCode, List<String> perms) {
         Log.d(TAG, "获取成功的权限" + perms);
