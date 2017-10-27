@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.neusoft.speechdemo.speech.Speech;
 import com.neusoft.speechdemo.speech.bean.ListenResult;
 import com.neusoft.speechdemo.speech.bean.Semantic;
+import com.neusoft.speechdemo.speech.bean.Weather;
 import com.neusoft.speechdemo.speech.listener.OnListenListener;
 import com.neusoft.speechdemo.speech.listener.OnSpeakListener;
 import com.neusoft.speechdemo.util.JsonUtil;
@@ -59,17 +60,23 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onListenSuccess(int requestCode, String pResult) {
             Log.d(TAG, "onListenSuccess requestCode " + requestCode + ", pResult " + pResult);
-            ListenResult listenResult = JsonUtil.fromJson(pResult, new TypeToken<ListenResult>() {
-            }.getType());
-            Log.e(TAG, "listenResult " + listenResult);
             switch (requestCode) {
                 case LISTEN_OPEN_TYPE:
                     boolean hasAnswer = false;
+                    ListenResult<Weather[]> weatherResult = JsonUtil.fromJson(pResult, new TypeToken<ListenResult<Weather[]>>() {
+                    }.getType());
                     // 这里可以有多分支判断，目前只做了天气的判断
-                    if (null != listenResult && "weather".equals(listenResult.service)) {
-                        if (null != listenResult.answer && null != listenResult.answer.text) {
+                    if (null != weatherResult && "weather".equals(weatherResult.service)) {
+                        if (null != weatherResult.answer && null != weatherResult.answer.text) {
                             hasAnswer = true;
-                            Speech.getInstance().speak(listenResult.answer.text, SPEAK_WEATHER_RESULT);
+                            String string = weatherResult.answer.text +
+                                    weatherResult.data.result[0].airQuality +
+                                    "，" +
+                                    weatherResult.data.result[0].exp.ct.expName +
+                                    weatherResult.data.result[0].exp.ct.level +
+                                    "，" +
+                                    weatherResult.data.result[0].exp.ct.prompt;
+                            Speech.getInstance().speak(string, SPEAK_WEATHER_RESULT);
                         }
                     }
                     if (!hasAnswer) {
@@ -78,8 +85,10 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case LISTEN_PNCOMMAND_NAVI:
                     boolean isPositive = false;
-                    if (null != listenResult && "PNCOMMAND.command".equals(listenResult.service)) {
-                        Semantic[] semantics2 = listenResult.semantic;
+                    ListenResult commandResult = JsonUtil.fromJson(pResult, new TypeToken<ListenResult>() {
+                    }.getType());
+                    if (null != commandResult && "PNCOMMAND.command".equals(commandResult.service)) {
+                        Semantic[] semantics2 = commandResult.semantic;
                         if (null != semantics2 && 0 < semantics2.length) {
                             Semantic semantic = semantics2[0];
                             String intent = semantic.intent;
