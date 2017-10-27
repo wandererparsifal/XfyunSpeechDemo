@@ -63,6 +63,14 @@ public class Speech implements ISpeech {
         mOnSpeakListener = null;
     }
 
+    public void subscribeOnListenListener(OnListenListener listener) {
+        mOnListenListener = listener;
+    }
+
+    public void unSubscribeOnListenListener(OnListenListener listener) {
+        mOnListenListener = null;
+    }
+
     @Override
     public void speak(String text, int requestCode) {
         if (null == mOnSpeakListener) { // 防止空指针
@@ -98,8 +106,22 @@ public class Speech implements ISpeech {
     }
 
     @Override
-    public void listen(OnListenListener pOnListenListener) {
-        mSpeechBaseUtil.listen(pOnListenListener);
+    public void listen(int requestCode) {
+        if (null == mOnListenListener) { // 防止空指针
+            mOnListenListener = new OnListenListener() {
+                @Override
+                public void onListenSuccess(int requestCode, String pResult) {
+
+                }
+
+                @Override
+                public void onListenError(int requestCode, int pErrorCode) {
+
+                }
+            };
+        }
+        mOnListenListener.requestCode = requestCode;
+        mSpeechBaseUtil.listen(mOnListenListener);
     }
 
     @Override

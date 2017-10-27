@@ -2,7 +2,6 @@ package com.neusoft.speechdemo.speech;
 
 import android.content.Context;
 
-import com.neusoft.speechdemo.speech.listener.OnListenListener;
 import com.neusoft.speechdemo.speech.listener.OnSpeechInitListener;
 
 /**
@@ -35,11 +34,11 @@ public interface ISpeech {
     void cancelSpeak();
 
     /**
-     * 只会听一次的语音监听，没有听清将直接返回MSG_ERROR_NO_DATA
+     * 语音监听，没有听清将直接返回MSG_ERROR_NO_DATA
      *
-     * @param pOnListenListener 监听回调
+     * @param requestCode 监听请求码
      */
-    void listen(OnListenListener pOnListenListener);
+    void listen(int requestCode);
 
     boolean isListening();
 

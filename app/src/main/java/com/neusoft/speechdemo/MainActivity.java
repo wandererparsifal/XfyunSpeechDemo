@@ -21,25 +21,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "onSpeakSuccess requestCode " + requestCode);
             switch (requestCode) {
                 case 101:
-                    Speech.getInstance().listen(new OnListenListener() {
-                        @Override
-                        public void onListenSuccess(String pResult) {
-                            Log.e(TAG, "pResult " + pResult);
-                            ListenResult listenResult = JsonUtil.fromJson(pResult, new TypeToken<ListenResult>() {
-                            }.getType());
-                            Log.e(TAG, "listenResult " + pResult);
-                            if (null != listenResult && null != listenResult.answer && null != listenResult.answer.text) {
-                                Speech.getInstance().speak(listenResult.answer.text, 102);
-                            } else {
-                                Speech.getInstance().speak("对不起，没有查询到结果", 103);
-                            }
-                        }
-
-                        @Override
-                        public void onListenError(int pErrorCode) {
-
-                        }
-                    });
+                    Speech.getInstance().listen(201);
                     break;
                 case 102:
                     break;
@@ -61,11 +43,39 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private OnListenListener mOnListenListener = new OnListenListener() {
+        @Override
+        public void onListenSuccess(int requestCode, String pResult) {
+            Log.d(TAG, "onListenSuccess requestCode " + requestCode);
+            switch (requestCode) {
+                case 201:
+                    Log.e(TAG, "pResult " + pResult);
+                    ListenResult listenResult = JsonUtil.fromJson(pResult, new TypeToken<ListenResult>() {
+                    }.getType());
+                    Log.e(TAG, "listenResult " + pResult);
+                    if (null != listenResult && null != listenResult.answer && null != listenResult.answer.text) {
+                        Speech.getInstance().speak(listenResult.answer.text, 102);
+                    } else {
+                        Speech.getInstance().speak("对不起，没有查询到结果", 103);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        @Override
+        public void onListenError(int requestCode, int pErrorCode) {
+            Log.d(TAG, "onListenError requestCode " + requestCode + ", pErrorCode " + pErrorCode);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Speech.getInstance().subscribeOnSpeakListener(mOnSpeakListener);
+        Speech.getInstance().subscribeOnListenListener(mOnListenListener);
     }
 
     @Override
@@ -75,9 +85,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        Speech.getInstance().cancelSpeak();
+        Speech.getInstance().cancelListen();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         // ※ 在 MainActivity、Fragment 等有生命周期的对象中使用时，一定要在合适的时机反注册，不然会内存泄露
         Speech.getInstance().unSubscribeOnSpeakListener(mOnSpeakListener);
+        Speech.getInstance().unSubscribeOnListenListener(mOnListenListener);
     }
 }
