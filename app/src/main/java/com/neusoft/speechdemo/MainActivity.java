@@ -1,8 +1,12 @@
 package com.neusoft.speechdemo;
 
+import android.Manifest;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.google.gson.reflect.TypeToken;
 import com.neusoft.speechdemo.speech.Speech;
@@ -13,6 +17,10 @@ import com.neusoft.speechdemo.speech.listener.OnListenListener;
 import com.neusoft.speechdemo.speech.listener.OnSpeakListener;
 import com.neusoft.speechdemo.util.JsonUtil;
 
+import java.util.List;
+
+import pub.devrel.easypermissions.EasyPermissions;
+
 import static com.neusoft.speechdemo.RequestCode.LISTEN_OPEN_TYPE;
 import static com.neusoft.speechdemo.RequestCode.LISTEN_PNCOMMAND_NAVI;
 import static com.neusoft.speechdemo.RequestCode.SPEAK_ASK_NAVI;
@@ -20,9 +28,21 @@ import static com.neusoft.speechdemo.RequestCode.SPEAK_GREETING;
 import static com.neusoft.speechdemo.RequestCode.SPEAK_SORRY;
 import static com.neusoft.speechdemo.RequestCode.SPEAK_WEATHER_RESULT;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks { // Android 6.0 以上 Permission 特殊处理
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    private Button mBtnWake = null;
+
+    private boolean hasAllPermissions = false;
+
+    //所要申请的权限
+    private String[] mPermissions = {Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     private OnSpeakListener mOnSpeakListener = new OnSpeakListener() {
         @Override
@@ -117,14 +137,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (EasyPermissions.hasPermissions(this, mPermissions)) {//检查是否获取该权限
+            Log.d(TAG, "已获取权限");
+            hasAllPermissions = true;
+        } else {
+            //第二个参数是被拒绝后再次申请该权限的解释
+            //第三个参数是请求码
+            //第四个参数是要申请的权限
+            EasyPermissions.requestPermissions(this, "必要的权限未被授权，请授权", 0, mPermissions);
+        }
+
         Speech.getInstance().subscribeOnSpeakListener(mOnSpeakListener);
         Speech.getInstance().subscribeOnListenListener(mOnListenListener);
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Speech.getInstance().speak("您好，请问有什么可以帮助您的？", SPEAK_GREETING);
+        mBtnWake = findViewById(R.id.btn_wake);
+        mBtnWake.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (hasAllPermissions) {
+                    Speech.getInstance().speak("您好，请问有什么可以帮助您的？", SPEAK_GREETING);
+                } else {
+                    Speech.getInstance().speak("请授权全部权限后使用", 0);
+                }
+            }
+        });
     }
 
     @Override
@@ -140,5 +177,27 @@ public class MainActivity extends AppCompatActivity {
         // ※ 在 MainActivity、Fragment 等有生命周期的对象中使用时，一定要在合适的时机反注册，不然会内存泄露
         Speech.getInstance().unSubscribeOnSpeakListener(mOnSpeakListener);
         Speech.getInstance().unSubscribeOnListenListener(mOnListenListener);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        //把申请权限的回调交由EasyPermissions处理
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    //下面两个方法是实现EasyPermissions的EasyPermissions.PermissionCallbacks接口
+    //分别返回授权成功和失败的权限
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        Log.d(TAG, "获取成功的权限" + perms);
+        if (perms.size() == mPermissions.length) {
+            hasAllPermissions = true;
+        }
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        Log.d(TAG, "获取失败的权限" + perms);
     }
 }

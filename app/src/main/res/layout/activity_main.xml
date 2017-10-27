@@ -6,10 +6,11 @@
     android:layout_height="match_parent"
     tools:context="com.neusoft.speechdemo.MainActivity">
 
-    <TextView
+    <Button
+        android:id="@+id/btn_wake"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="@string/str_wake"
         android:textColor="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

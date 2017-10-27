@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">XfyunSpeechDemo</string>
     <string name="app_id">59f140ae</string>
+    <string name="str_wake">唤醒</string>
 </resources>
