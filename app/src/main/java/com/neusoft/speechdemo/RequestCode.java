@@ -21,7 +21,17 @@ public class RequestCode {
     public static final int SPEAK_SORRY = 10003;
 
     /**
+     * "需要打开导航APP吗？"
+     */
+    public static final int SPEAK_ASK_NAVI = 10004;
+
+    /**
      * 开放式，无特定期待结果
      */
     public static final int LISTEN_OPEN_TYPE = 20001;
+
+    /**
+     * 开期待听到肯定回答或否定回答
+     */
+    public static final int LISTEN_PNCOMMAND_NAVI = 20002;
 }
