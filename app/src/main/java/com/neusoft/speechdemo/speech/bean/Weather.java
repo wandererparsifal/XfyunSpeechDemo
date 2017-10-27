@@ -5,7 +5,7 @@ package com.neusoft.speechdemo.speech.bean;
  */
 public class Weather {
 
-    public int airData;
+    public String airData;
 
     public String airQuality;
 
@@ -13,7 +13,7 @@ public class Weather {
 
     public String date;
 
-    public int dateLong;
+    public String dateLong;
 
     public ExpBean exp;
 
@@ -23,17 +23,17 @@ public class Weather {
 
     public String pm25;
 
-    public int temp;
+    public String temp;
 
     public String tempRange;
 
     public String weather;
 
-    public int weatherType;
+    public String weatherType;
 
     public String wind;
 
-    public int windLevel;
+    public String windLevel;
 
     public static class ExpBean {
 
