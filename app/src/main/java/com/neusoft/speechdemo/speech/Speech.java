@@ -16,7 +16,15 @@ public class Speech implements ISpeech {
 
     private SpeechBaseUtil mSpeechBaseUtil = null;
 
-    private Context mContext = null;
+    /**
+     * 同一时间只能有一个语音播报，只需要一个实例
+     */
+    private OnSpeakListener mOnSpeakListener = null;
+
+    /**
+     * 同一时间只能有一个语音监听，只需要一个实例
+     */
+    private OnListenListener mOnListenListener = null;
 
     private Speech() {
     }
@@ -31,9 +39,8 @@ public class Speech implements ISpeech {
 
     @Override
     public void init(Context pContext, final OnSpeechInitListener pOnSpeechInitListener) {
-        mContext = pContext;
         mSpeechBaseUtil = new SpeechBaseUtil();
-        mSpeechBaseUtil.init(mContext, new SpeechBaseUtil.SpeechInitListener() {
+        mSpeechBaseUtil.init(pContext, new SpeechBaseUtil.SpeechInitListener() {
             @Override
             public void onCompleted() {
                 Log.d(TAG, "SpeechBaseUtil init Completed");
@@ -48,9 +55,36 @@ public class Speech implements ISpeech {
         });
     }
 
+    public void subscribeOnSpeakListener(OnSpeakListener listener) {
+        mOnSpeakListener = listener;
+    }
+
+    public void unSubscribeOnSpeakListener(OnSpeakListener listener) {
+        mOnSpeakListener = null;
+    }
+
     @Override
-    public void speak(String pText, OnSpeakListener pOnSpeakListener) {
-        mSpeechBaseUtil.speak(pText, pOnSpeakListener);
+    public void speak(String text, int requestCode) {
+        if (null == mOnSpeakListener) { // 防止空指针
+            mOnSpeakListener = new OnSpeakListener() {
+                @Override
+                public void onSpeakSuccess(int requestCode) {
+
+                }
+
+                @Override
+                public void onSpeakError(int requestCode, int pErrorCode) {
+
+                }
+
+                @Override
+                public void onCancel(int requestCode) {
+
+                }
+            };
+        }
+        mOnSpeakListener.requestCode = requestCode;
+        mSpeechBaseUtil.speak(text, mOnSpeakListener);
     }
 
     @Override

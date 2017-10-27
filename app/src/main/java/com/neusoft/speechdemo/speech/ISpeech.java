@@ -3,7 +3,6 @@ package com.neusoft.speechdemo.speech;
 import android.content.Context;
 
 import com.neusoft.speechdemo.speech.listener.OnListenListener;
-import com.neusoft.speechdemo.speech.listener.OnSpeakListener;
 import com.neusoft.speechdemo.speech.listener.OnSpeechInitListener;
 
 /**
@@ -23,10 +22,10 @@ public interface ISpeech {
     /**
      * 语音播报
      *
-     * @param pText            播报内容
-     * @param pOnSpeakListener 播报回调
+     * @param text        播报内容
+     * @param requestCode 播报请求码
      */
-    void speak(String pText, OnSpeakListener pOnSpeakListener);
+    void speak(String text, int requestCode);
 
     boolean isSpeaking();
 

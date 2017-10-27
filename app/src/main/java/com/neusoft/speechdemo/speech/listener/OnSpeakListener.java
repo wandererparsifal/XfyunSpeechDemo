@@ -12,11 +12,13 @@ import static com.iflytek.cloud.SpeechEvent.EVENT_TTS_CANCEL;
  */
 public abstract class OnSpeakListener implements SynthesizerListener {
 
-    public abstract void onSpeakSuccess();
+    public int requestCode;
 
-    public abstract void onSpeakError(int pErrorCode);
+    public abstract void onSpeakSuccess(int requestCode);
 
-    public abstract void onCancel();
+    public abstract void onSpeakError(int requestCode, int pErrorCode);
+
+    public abstract void onCancel(int requestCode);
 
     @Override
     public void onSpeakBegin() {
@@ -46,16 +48,16 @@ public abstract class OnSpeakListener implements SynthesizerListener {
     @Override
     public void onCompleted(SpeechError speechError) {
         if (null == speechError) {
-            onSpeakSuccess();
+            onSpeakSuccess(requestCode);
         } else {
-            onSpeakError(speechError.getErrorCode());
+            onSpeakError(requestCode, speechError.getErrorCode());
         }
     }
 
     @Override
     public void onEvent(int eventType, int arg1, int arg2, Bundle obj) {
         if (EVENT_TTS_CANCEL == eventType) {
-            onCancel();
+            onCancel(requestCode);
         }
     }
 }

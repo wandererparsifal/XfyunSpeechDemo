@@ -22,22 +22,7 @@ public class SpeechApplication extends Application {
         Speech.getInstance().init(this, new OnSpeechInitListener() {
             @Override
             public void onInitSuccess() {
-                Speech.getInstance().speak("讯飞语音初始化成功", new OnSpeakListener() {
-                    @Override
-                    public void onSpeakSuccess() {
-
-                    }
-
-                    @Override
-                    public void onSpeakError(int pErrorCode) {
-
-                    }
-
-                    @Override
-                    public void onCancel() {
-
-                    }
-                });
+                Speech.getInstance().speak("讯飞语音初始化成功", 0);
             }
 
             @Override
