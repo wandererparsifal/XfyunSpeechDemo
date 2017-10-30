@@ -10,9 +10,9 @@ import android.widget.Button;
 
 import com.google.gson.reflect.TypeToken;
 import com.neusoft.speechdemo.speech.Speech;
-import com.neusoft.speechdemo.speech.bean.ListenResult;
-import com.neusoft.speechdemo.speech.bean.Semantic;
 import com.neusoft.speechdemo.speech.bean.Weather;
+import com.neusoft.speechdemo.speech.bean.base.ListenResult;
+import com.neusoft.speechdemo.speech.bean.base.Semantic;
 import com.neusoft.speechdemo.speech.listener.OnListenListener;
 import com.neusoft.speechdemo.speech.listener.OnSpeakListener;
 import com.neusoft.speechdemo.util.JsonUtil;

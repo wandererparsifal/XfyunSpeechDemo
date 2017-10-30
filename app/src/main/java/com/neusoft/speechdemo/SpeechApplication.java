@@ -4,7 +4,6 @@ import android.app.Application;
 
 import com.iflytek.cloud.SpeechUtility;
 import com.neusoft.speechdemo.speech.Speech;
-import com.neusoft.speechdemo.speech.listener.OnSpeakListener;
 import com.neusoft.speechdemo.speech.listener.OnSpeechInitListener;
 
 /**

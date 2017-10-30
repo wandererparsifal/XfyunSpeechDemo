@@ -1,4 +1,4 @@
-package com.neusoft.speechdemo.speech.bean;
+package com.neusoft.speechdemo.speech.bean.base;
 
 /**
  * Created by yangming on 17-10-26.

@@ -1,4 +1,4 @@
-package com.neusoft.speechdemo.speech.bean;
+package com.neusoft.speechdemo.speech.bean.base;
 
 import java.util.Arrays;
 
