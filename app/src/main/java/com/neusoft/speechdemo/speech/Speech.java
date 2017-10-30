@@ -7,6 +7,8 @@ import com.neusoft.speechdemo.speech.listener.OnListenListener;
 import com.neusoft.speechdemo.speech.listener.OnSpeakListener;
 import com.neusoft.speechdemo.speech.listener.OnSpeechInitListener;
 
+import java.util.ArrayList;
+
 /**
  * 语音实现类
  */
@@ -17,14 +19,14 @@ public class Speech implements ISpeech {
     private SpeechBaseUtil mSpeechBaseUtil = null;
 
     /**
-     * 同一时间只能有一个语音播报，只需要一个实例
+     * 所有的语音播报的回调
      */
-    private OnSpeakListener mOnSpeakListener = null;
+    private final ArrayList<OnSpeakListener> mOnSpeakListeners = new ArrayList<>();
 
     /**
-     * 同一时间只能有一个语音监听，只需要一个实例
+     * 所有的语音监听的回调
      */
-    private OnListenListener mOnListenListener = null;
+    private final ArrayList<OnListenListener> mOnListenListeners = new ArrayList<>();
 
     private Speech() {
     }
@@ -56,43 +58,55 @@ public class Speech implements ISpeech {
     }
 
     public void subscribeOnSpeakListener(OnSpeakListener listener) {
-        mOnSpeakListener = listener;
+        synchronized (mOnSpeakListeners) {
+            mOnSpeakListeners.add(listener);
+        }
     }
 
     public void unSubscribeOnSpeakListener(OnSpeakListener listener) {
-        mOnSpeakListener = null;
+        synchronized (mOnSpeakListeners) {
+            mOnSpeakListeners.remove(listener);
+        }
     }
 
     public void subscribeOnListenListener(OnListenListener listener) {
-        mOnListenListener = listener;
+        synchronized (mOnListenListeners) {
+            mOnListenListeners.add(listener);
+        }
     }
 
     public void unSubscribeOnListenListener(OnListenListener listener) {
-        mOnListenListener = null;
+        synchronized (mOnListenListeners) {
+            mOnListenListeners.remove(listener);
+        }
     }
 
     @Override
     public void speak(String text, int requestCode) {
-        if (null == mOnSpeakListener) { // 防止空指针
-            mOnSpeakListener = new OnSpeakListener() {
-                @Override
-                public void onSpeakSuccess(int requestCode) {
-
+        OnSpeakListener onSpeakListener = new OnSpeakListener() {
+            @Override
+            public void onSpeakSuccess(int requestCode) {
+                for (OnSpeakListener onSpeakListener : mOnSpeakListeners) {
+                    onSpeakListener.onSpeakSuccess(requestCode);
                 }
+            }
 
-                @Override
-                public void onSpeakError(int requestCode, int errorCode) {
-
+            @Override
+            public void onSpeakError(int requestCode, int errorCode) {
+                for (OnSpeakListener onSpeakListener : mOnSpeakListeners) {
+                    onSpeakListener.onSpeakError(requestCode, errorCode);
                 }
+            }
 
-                @Override
-                public void onCancel(int requestCode) {
-
+            @Override
+            public void onCancel(int requestCode) {
+                for (OnSpeakListener onSpeakListener : mOnSpeakListeners) {
+                    onSpeakListener.onCancel(requestCode);
                 }
-            };
-        }
-        mOnSpeakListener.requestCode = requestCode;
-        mSpeechBaseUtil.speak(text, mOnSpeakListener);
+            }
+        };
+        onSpeakListener.requestCode = requestCode;
+        mSpeechBaseUtil.speak(text, onSpeakListener);
     }
 
     @Override
@@ -107,21 +121,23 @@ public class Speech implements ISpeech {
 
     @Override
     public void listen(int requestCode) {
-        if (null == mOnListenListener) { // 防止空指针
-            mOnListenListener = new OnListenListener() {
-                @Override
-                public void onListenSuccess(int requestCode, String result) {
-
+        OnListenListener onListenListener = new OnListenListener() {
+            @Override
+            public void onListenSuccess(int requestCode, String result) {
+                for (OnListenListener onListenListener : mOnListenListeners) {
+                    onListenListener.onListenSuccess(requestCode, result);
                 }
+            }
 
-                @Override
-                public void onListenError(int requestCode, int errorCode) {
-
+            @Override
+            public void onListenError(int requestCode, int errorCode) {
+                for (OnListenListener onListenListener : mOnListenListeners) {
+                    onListenListener.onListenError(requestCode, errorCode);
                 }
-            };
-        }
-        mOnListenListener.requestCode = requestCode;
-        mSpeechBaseUtil.listen(mOnListenListener);
+            }
+        };
+        onListenListener.requestCode = requestCode;
+        mSpeechBaseUtil.listen(onListenListener);
     }
 
     @Override
