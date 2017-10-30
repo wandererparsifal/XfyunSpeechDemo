@@ -21,12 +21,12 @@ import java.util.List;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static com.neusoft.speechdemo.RequestCode.LISTEN_OPEN_TYPE;
-import static com.neusoft.speechdemo.RequestCode.LISTEN_PNCOMMAND_NAVI;
-import static com.neusoft.speechdemo.RequestCode.SPEAK_ASK_NAVI;
-import static com.neusoft.speechdemo.RequestCode.SPEAK_GREETING;
-import static com.neusoft.speechdemo.RequestCode.SPEAK_SORRY;
-import static com.neusoft.speechdemo.RequestCode.SPEAK_WEATHER_RESULT;
+import static com.neusoft.speechdemo.SpeechID.LISTEN_OPEN_TYPE;
+import static com.neusoft.speechdemo.SpeechID.LISTEN_COMMAND_NAVI;
+import static com.neusoft.speechdemo.SpeechID.SPEAK_ASK_NAVI;
+import static com.neusoft.speechdemo.SpeechID.SPEAK_GREETING;
+import static com.neusoft.speechdemo.SpeechID.SPEAK_SORRY;
+import static com.neusoft.speechdemo.SpeechID.SPEAK_WEATHER_RESULT;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks { // Android 6.0 以上 Permission 特殊处理
 
@@ -51,9 +51,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
      */
     private OnSpeakListener mOnSpeakListener = new OnSpeakListener() {
         @Override
-        public void onSpeakSuccess(int requestCode) {
-            Log.d(TAG, "onSpeakSuccess requestCode " + requestCode);
-            switch (requestCode) {
+        public void onSpeakSuccess(int speakID) {
+            Log.d(TAG, "onSpeakSuccess speakID " + speakID);
+            switch (speakID) {
                 case SPEAK_GREETING:
                     Speech.getInstance().listen(LISTEN_OPEN_TYPE);
                     break;
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     Speech.getInstance().speak("需要打开导航软件吗？", SPEAK_ASK_NAVI);
                     break;
                 case SPEAK_ASK_NAVI:
-                    Speech.getInstance().listen(LISTEN_PNCOMMAND_NAVI);
+                    Speech.getInstance().listen(LISTEN_COMMAND_NAVI);
                     break;
                 case SPEAK_SORRY:
                     break;
@@ -71,13 +71,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
 
         @Override
-        public void onSpeakError(int requestCode, int errorCode) {
-            Log.d(TAG, "onSpeakError requestCode " + requestCode + ", errorCode " + errorCode);
+        public void onSpeakError(int speakID, int errorCode) {
+            Log.d(TAG, "onSpeakError speakID " + speakID + ", errorCode " + errorCode);
         }
 
         @Override
-        public void onCancel(int requestCode) {
-            Log.d(TAG, "onCancel requestCode " + requestCode);
+        public void onCancel(int speakID) {
+            Log.d(TAG, "onCancel speakID " + speakID);
         }
     };
 
@@ -86,9 +86,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
      */
     private OnListenListener mOnListenListener = new OnListenListener() {
         @Override
-        public void onListenSuccess(int requestCode, String result) {
-            Log.d(TAG, "onListenSuccess requestCode " + requestCode + ", result " + result);
-            switch (requestCode) {
+        public void onListenSuccess(int listenID, String result) {
+            Log.d(TAG, "onListenSuccess listenID " + listenID + ", result " + result);
+            switch (listenID) {
                 case LISTEN_OPEN_TYPE:
                     // 这里可以有多分支判断，目前只做了天气的判断
                     boolean hasAnswer = false;
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                         Speech.getInstance().speak("对不起，没有查询到结果。", SPEAK_SORRY);
                     }
                     break;
-                case LISTEN_PNCOMMAND_NAVI:
+                case LISTEN_COMMAND_NAVI:
                     boolean isPositive = false;
                     ListenResult commandResult = JsonUtil.fromJson(result, new TypeToken<ListenResult>() {
                     }.getType());
@@ -136,8 +136,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
 
         @Override
-        public void onListenError(int requestCode, int errorCode) {
-            Log.d(TAG, "onListenError requestCode " + requestCode + ", errorCode " + errorCode);
+        public void onListenError(int listenID, int errorCode) {
+            Log.d(TAG, "onListenError listenID " + listenID + ", errorCode " + errorCode);
         }
     };
 

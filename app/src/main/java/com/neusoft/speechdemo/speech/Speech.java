@@ -106,33 +106,33 @@ public class Speech {
     /**
      * 语音播报
      *
-     * @param text        播报内容
-     * @param requestCode 播报请求码
+     * @param text    播报内容
+     * @param speakID 播报 ID
      */
-    public void speak(String text, int requestCode) {
+    public void speak(String text, int speakID) {
         OnSpeakListener onSpeakListener = new OnSpeakListener() {
             @Override
-            public void onSpeakSuccess(int requestCode) {
+            public void onSpeakSuccess(int speakID) {
                 for (OnSpeakListener onSpeakListener : mOnSpeakListeners) {
-                    onSpeakListener.onSpeakSuccess(requestCode);
+                    onSpeakListener.onSpeakSuccess(speakID);
                 }
             }
 
             @Override
-            public void onSpeakError(int requestCode, int errorCode) {
+            public void onSpeakError(int speakID, int errorCode) {
                 for (OnSpeakListener onSpeakListener : mOnSpeakListeners) {
-                    onSpeakListener.onSpeakError(requestCode, errorCode);
+                    onSpeakListener.onSpeakError(speakID, errorCode);
                 }
             }
 
             @Override
-            public void onCancel(int requestCode) {
+            public void onCancel(int speakID) {
                 for (OnSpeakListener onSpeakListener : mOnSpeakListeners) {
-                    onSpeakListener.onCancel(requestCode);
+                    onSpeakListener.onCancel(speakID);
                 }
             }
         };
-        onSpeakListener.requestCode = requestCode;
+        onSpeakListener.speakID = speakID;
         mSpeechBaseUtil.speak(text, onSpeakListener);
     }
 
@@ -150,25 +150,25 @@ public class Speech {
     /**
      * 语音监听，没有听清将直接返回MSG_ERROR_NO_DATA
      *
-     * @param requestCode 监听请求码
+     * @param listenID 监听 ID
      */
-    public void listen(int requestCode) {
+    public void listen(int listenID) {
         OnListenListener onListenListener = new OnListenListener() {
             @Override
-            public void onListenSuccess(int requestCode, String result) {
+            public void onListenSuccess(int listenID, String result) {
                 for (OnListenListener onListenListener : mOnListenListeners) {
-                    onListenListener.onListenSuccess(requestCode, result);
+                    onListenListener.onListenSuccess(listenID, result);
                 }
             }
 
             @Override
-            public void onListenError(int requestCode, int errorCode) {
+            public void onListenError(int listenID, int errorCode) {
                 for (OnListenListener onListenListener : mOnListenListeners) {
-                    onListenListener.onListenError(requestCode, errorCode);
+                    onListenListener.onListenError(listenID, errorCode);
                 }
             }
         };
-        onListenListener.requestCode = requestCode;
+        onListenListener.listenID = listenID;
         mSpeechBaseUtil.listen(onListenListener);
     }
 

@@ -1,9 +1,11 @@
 package com.neusoft.speechdemo;
 
 /**
+ * 语音 ID 常量
+ * <p>
  * Created by yangming on 17-10-27.
  */
-public class RequestCode {
+public class SpeechID {
 
     /**
      * "您好，请问有什么可以帮助您的？"
@@ -33,5 +35,5 @@ public class RequestCode {
     /**
      * 开期待听到肯定回答或否定回答
      */
-    public static final int LISTEN_PNCOMMAND_NAVI = 20002;
+    public static final int LISTEN_COMMAND_NAVI = 20002;
 }

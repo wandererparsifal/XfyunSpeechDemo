@@ -11,11 +11,11 @@ import com.iflytek.cloud.UnderstanderResult;
  */
 public abstract class OnListenListener implements SpeechUnderstanderListener {
 
-    public int requestCode;
+    public int listenID;
 
-    public abstract void onListenSuccess(int requestCode, String result);
+    public abstract void onListenSuccess(int listenID, String result);
 
-    public abstract void onListenError(int requestCode, int errorCode);
+    public abstract void onListenError(int listenID, int errorCode);
 
     @Override
     public void onVolumeChanged(int i, byte[] bytes) {
@@ -34,12 +34,12 @@ public abstract class OnListenListener implements SpeechUnderstanderListener {
 
     @Override
     public void onResult(UnderstanderResult understanderResult) {
-        onListenSuccess(requestCode, understanderResult.getResultString());
+        onListenSuccess(listenID, understanderResult.getResultString());
     }
 
     @Override
     public void onError(SpeechError speechError) {
-        onListenError(requestCode, speechError.getErrorCode());
+        onListenError(listenID, speechError.getErrorCode());
     }
 
     @Override
