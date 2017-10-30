@@ -11,6 +11,7 @@ import android.widget.Button;
 import com.google.gson.reflect.TypeToken;
 import com.neusoft.speechdemo.speech.Speech;
 import com.neusoft.speechdemo.speech.bean.Weather;
+import com.neusoft.speechdemo.speech.bean.base.Data;
 import com.neusoft.speechdemo.speech.bean.base.ListenResult;
 import com.neusoft.speechdemo.speech.bean.base.Semantic;
 import com.neusoft.speechdemo.speech.listener.OnListenListener;
@@ -21,8 +22,8 @@ import java.util.List;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static com.neusoft.speechdemo.SpeechID.LISTEN_OPEN_TYPE;
 import static com.neusoft.speechdemo.SpeechID.LISTEN_COMMAND_NAVI;
+import static com.neusoft.speechdemo.SpeechID.LISTEN_OPEN_TYPE;
 import static com.neusoft.speechdemo.SpeechID.SPEAK_ASK_NAVI;
 import static com.neusoft.speechdemo.SpeechID.SPEAK_GREETING;
 import static com.neusoft.speechdemo.SpeechID.SPEAK_SORRY;
@@ -92,18 +93,22 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 case LISTEN_OPEN_TYPE:
                     // 这里可以有多分支判断，目前只做了天气的判断
                     boolean hasAnswer = false;
-                    ListenResult<Weather[]> weatherResult = JsonUtil.fromJson(result, new TypeToken<ListenResult<Weather[]>>() {
-                    }.getType());
-                    if (null != weatherResult && "weather".equals(weatherResult.service)) {
-                        if (null != weatherResult.answer && null != weatherResult.answer.text) {
+                    // 此时不知道 data 具体类型，没有办法直接使用泛型解析
+                    ListenResult listenResult = JsonUtil.fromJson(result, ListenResult.class);
+                    if (null != listenResult && "weather".equals(listenResult.service)) {
+                        // 这里由于此前不知道 listenResult.data 具体类型，没有办法直接按照 Weather[] 类型解析，所以先将 listenResult.data 转回了 Json，
+                        // 再转到 Data<Weather[]>，从中取得 Weather[]，如果不想这样做需要手动解析 Json
+                        Data<Weather[]> weatherData = JsonUtil.fromJson(JsonUtil.toJson(listenResult.data), new TypeToken<Data<Weather[]>>() {
+                        }.getType());
+                        if (null != listenResult.answer && null != listenResult.answer.text) {
                             hasAnswer = true;
-                            String string = weatherResult.answer.text +
-                                    weatherResult.data.result[0].airQuality +
+                            String string = listenResult.answer.text +
+                                    weatherData.result[0].airQuality +
                                     "，" +
-                                    weatherResult.data.result[0].exp.ct.expName +
-                                    weatherResult.data.result[0].exp.ct.level +
+                                    weatherData.result[0].exp.ct.expName +
+                                    weatherData.result[0].exp.ct.level +
                                     "，" +
-                                    weatherResult.data.result[0].exp.ct.prompt;
+                                    weatherData.result[0].exp.ct.prompt;
                             Speech.getInstance().speak(string, SPEAK_WEATHER_RESULT);
                         }
                     }
@@ -113,8 +118,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     break;
                 case LISTEN_COMMAND_NAVI:
                     boolean isPositive = false;
-                    ListenResult commandResult = JsonUtil.fromJson(result, new TypeToken<ListenResult>() {
-                    }.getType());
+                    ListenResult commandResult = JsonUtil.fromJson(result, ListenResult.class);
                     if (null != commandResult && "PNCOMMAND.command".equals(commandResult.service)) {
                         Semantic[] semantics2 = commandResult.semantic;
                         if (null != semantics2 && 0 < semantics2.length) {
