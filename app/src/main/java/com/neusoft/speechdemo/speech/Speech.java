@@ -11,7 +11,7 @@ import java.util.ArrayList;
 /**
  * 语音实现类
  */
-public class Speech implements ISpeech {
+public class Speech {
 
     private static final String TAG = Speech.class.getSimpleName();
 
@@ -43,7 +43,11 @@ public class Speech implements ISpeech {
         return SingletonHolder.INSTANCE;
     }
 
-    @Override
+    /**
+     * 初始化语音功能
+     *
+     * @param context 上下文
+     */
     public void init(Context context) {
         mSpeechBaseUtil = new SpeechBaseUtil();
         mSpeechBaseUtil.init(context, new SpeechBaseUtil.SpeechInitListener() {
@@ -99,7 +103,12 @@ public class Speech implements ISpeech {
         }
     }
 
-    @Override
+    /**
+     * 语音播报
+     *
+     * @param text        播报内容
+     * @param requestCode 播报请求码
+     */
     public void speak(String text, int requestCode) {
         OnSpeakListener onSpeakListener = new OnSpeakListener() {
             @Override
@@ -127,17 +136,22 @@ public class Speech implements ISpeech {
         mSpeechBaseUtil.speak(text, onSpeakListener);
     }
 
-    @Override
     public boolean isSpeaking() {
         return mSpeechBaseUtil.isSpeaking();
     }
 
-    @Override
+    /**
+     * 停止语音播报
+     */
     public void cancelSpeak() {
         mSpeechBaseUtil.cancelSpeak();
     }
 
-    @Override
+    /**
+     * 语音监听，没有听清将直接返回MSG_ERROR_NO_DATA
+     *
+     * @param requestCode 监听请求码
+     */
     public void listen(int requestCode) {
         OnListenListener onListenListener = new OnListenListener() {
             @Override
@@ -158,17 +172,20 @@ public class Speech implements ISpeech {
         mSpeechBaseUtil.listen(onListenListener);
     }
 
-    @Override
     public boolean isListening() {
         return mSpeechBaseUtil.isListening();
     }
 
-    @Override
+    /**
+     * 停止语音监听
+     */
     public void cancelListen() {
         mSpeechBaseUtil.cancelListen();
     }
 
-    @Override
+    /**
+     * 停止语音功能，释放语音资源
+     */
     public void release() {
         mSpeechBaseUtil.release();
     }
