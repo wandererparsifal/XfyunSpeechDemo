@@ -1,7 +1,6 @@
 package com.neusoft.speechdemo.speech;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.neusoft.speechdemo.speech.listener.OnListenListener;
 import com.neusoft.speechdemo.speech.listener.OnSpeakListener;
@@ -17,6 +16,11 @@ public class Speech implements ISpeech {
     private static final String TAG = Speech.class.getSimpleName();
 
     private SpeechBaseUtil mSpeechBaseUtil = null;
+
+    /**
+     * 所有的语音初始化的回调
+     */
+    private final ArrayList<OnSpeechInitListener> mOnSpeechInitListeners = new ArrayList<>();
 
     /**
      * 所有的语音播报的回调
@@ -40,21 +44,35 @@ public class Speech implements ISpeech {
     }
 
     @Override
-    public void init(Context context, final OnSpeechInitListener onSpeechInitListener) {
+    public void init(Context context) {
         mSpeechBaseUtil = new SpeechBaseUtil();
         mSpeechBaseUtil.init(context, new SpeechBaseUtil.SpeechInitListener() {
             @Override
             public void onCompleted() {
-                Log.d(TAG, "SpeechBaseUtil init Completed");
-                onSpeechInitListener.onInitSuccess();
+                for (OnSpeechInitListener onSpeechInitListener : mOnSpeechInitListeners) {
+                    onSpeechInitListener.onInitSuccess();
+                }
             }
 
             @Override
             public void onError(int code) {
-                Log.d(TAG, "SpeechBaseUtil init Error, ErrorCode = " + code);
-                onSpeechInitListener.onInitError(code);
+                for (OnSpeechInitListener onSpeechInitListener : mOnSpeechInitListeners) {
+                    onSpeechInitListener.onInitError(code);
+                }
             }
         });
+    }
+
+    public void subscribeOnSpeechInitListener(OnSpeechInitListener listener) {
+        synchronized (mOnSpeechInitListeners) {
+            mOnSpeechInitListeners.add(listener);
+        }
+    }
+
+    public void unSubscribeOnSpeechInitListener(OnSpeechInitListener listener) {
+        synchronized (mOnSpeechInitListeners) {
+            mOnSpeechInitListeners.remove(listener);
+        }
     }
 
     public void subscribeOnSpeakListener(OnSpeakListener listener) {

@@ -2,8 +2,6 @@ package com.neusoft.speechdemo.speech;
 
 import android.content.Context;
 
-import com.neusoft.speechdemo.speech.listener.OnSpeechInitListener;
-
 /**
  * 语音接口
  * Created by yangming on 17-4-21.
@@ -13,10 +11,9 @@ public interface ISpeech {
     /**
      * 初始化语音功能
      *
-     * @param context              上下文
-     * @param onSpeechInitListener 语音功能初始化回调
+     * @param context 上下文
      */
-    void init(Context context, OnSpeechInitListener onSpeechInitListener);
+    void init(Context context);
 
     /**
      * 语音播报
