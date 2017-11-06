@@ -22,4 +22,12 @@ Demo 分为两个 Module，app 和 speechDemo。其中 speechDemo 是讯飞官�
 <p>
 7. 修改命名空间，打开工程中的“<font color="#007FFF">XfyunSpeechDemo/app/src/main/java/com/neusoft/speechdemo/MainActivity.java</font>”，搜索“<font color="#E32636">PNCOMMAND</font>”，替换为你自己的命名空间。
 
-**※ 注意：不要使用 Windows 记事本修改任何文件。**
+**※ 注意：**
+</br>
+**1. 命名空间 “PNCOMMAND” 和技能名 “command” 只是我起的名字，不是必须以 command 结尾，可以随意命名**
+</br>
+**2. 不要使用 Windows 记事本修改任何文件。**
+</br>
+**3. 不要使用 Windows 记事本修改任何文件。**
+</br>
+**4. 不要使用 Windows 记事本修改任何文件。**
